@@ -4,8 +4,7 @@
  */
 package br.ifrs.edimarmanica.extractionrules.neo4j;
 
-import br.edimarmanica.configuration.Paths;
-import br.edimarmanica.dataset.Site;
+import br.ifrs.edimarmanica.config.Configurations;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,8 +25,8 @@ public class Neo4jHandlerLocal extends Neo4jHandler {
     private final static String DB_FILE_NAME = "graph.db";
     private ExecutionEngine engine;
 
-    public Neo4jHandlerLocal(Site site) {
-        super(site);
+    public Neo4jHandlerLocal(String siteID) {
+        super(siteID);
 
         graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(getDBPath());
         engine = new ExecutionEngine(graphDb, StringLogger.SYSTEM_ERR);
@@ -35,20 +34,20 @@ public class Neo4jHandlerLocal extends Neo4jHandler {
         registerShutdownHook(graphDb);
     }
 
-    public static void deleteDatabase(Site site) {
+    public static void deleteDatabase(String siteID) {
         try {
-            Runtime.getRuntime().exec("rm -rf " + getDBPath(site));
+            Runtime.getRuntime().exec("rm -rf " + getDBPath(siteID));
         } catch (IOException ex) {
             Logger.getLogger(Neo4jHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private String getDBPath() {
-        return getDBPath(site);
+        return getDBPath(siteID);
     }
 
-    private static String getDBPath(Site site) {
-        return Paths.PARTIAL_DB_PATH + site.getPath() + "/" + DB_FILE_NAME;
+    private static String getDBPath(String siteID) {
+        return Configurations.GRAPH_PATH + "/" + siteID + "/" + DB_FILE_NAME;
     }
 
     @Override
@@ -67,8 +66,8 @@ public class Neo4jHandlerLocal extends Neo4jHandler {
     }
 
     public static void main(String[] args) {
-
-        Neo4jHandler neo4j = new Neo4jHandlerLocal(br.edimarmanica.dataset.weir.book.Site.BOOKSANDEBOOKS);
+        String siteID = "";
+        Neo4jHandler neo4j = new Neo4jHandlerLocal(siteID);
         Map<String, Object> params = new HashMap<>();
         params.put("value", ".*'.*");
         List<Object> results = neo4j.querySingleColumn("MATCH n WHERE n.VALUE =~ {value} RETURN n.VALUE as value LIMIT 3", params, "value");

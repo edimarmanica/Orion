@@ -4,8 +4,6 @@
  */
 package br.ifrs.edimarmanica.extractionrules.neo4j;
 
-import br.edimarmanica.configuration.General;
-import br.edimarmanica.dataset.Site;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,20 +20,15 @@ import org.neo4j.graphdb.Transaction;
  */
 public abstract class Neo4jHandler {
 
-    GraphDatabaseService graphDb;
-    Site site;
-
-    public Neo4jHandler(Site site) {
-        this.site = site;
+    protected GraphDatabaseService graphDb;
+    protected String siteID;
+    
+    public Neo4jHandler(String siteID) {
+        this.siteID = siteID;
     }
 
-    public static Neo4jHandler getInstance(Site site) {
-        switch (General.NEO4J_TYPE) {
-            case LOCAL:
-                return new Neo4jHandlerLocal(site);
-            default:
-                return null;
-        }
+    public static Neo4jHandler getInstance(String siteID) {
+        return new Neo4jHandlerLocal(siteID);
     }
 
     public abstract Iterator<Map<String, Object>> executeCypher(String cypher);
@@ -95,7 +88,7 @@ public abstract class Neo4jHandler {
         } else {
             iterator = executeCypher(cypherQuery, parameters);
         }
-        
+
         while (iterator.hasNext()) {
             Map<String, Object> st = iterator.next();
             results.add(st.get(columnName));

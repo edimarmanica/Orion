@@ -4,9 +4,7 @@
  */
 package br.ifrs.edimarmanica.extractionrules.load;
 
-import br.edimarmanica.configuration.General;
-import br.edimarmanica.configuration.Paths;
-import br.edimarmanica.dataset.Site;
+import br.ifrs.edimarmanica.config.Configurations;
 import br.ifrs.edimarmanica.extractionrules.neo4j.Neo4jHandler;
 import br.ifrs.edimarmanica.extractionrules.neo4j.Neo4jHandlerLocal;
 import br.ifrs.edimarmanica.extractionrules.neo4j.Neo4jHandlerType;
@@ -25,7 +23,6 @@ import org.neo4j.graphdb.Transaction;
 public class DirectoryToNeo4j {
 
     private Neo4jHandler neo4j;
-    private Site site;
 
     /**
      *
@@ -37,8 +34,6 @@ public class DirectoryToNeo4j {
         if (deleteCurrentDatabase && General.NEO4J_TYPE == Neo4jHandlerType.LOCAL) {
             Neo4jHandlerLocal.deleteDatabase(site);
         }
-
-        this.site = site;
     }
 
     public void loadPages() throws FileNotFoundException {
@@ -54,7 +49,7 @@ public class DirectoryToNeo4j {
                 continue;
             }
 
-            if (General.DEBUG) {
+            if (Configurations.DEBUG) {
                 printMemoryInfo();
                 System.out.println("i: " + i + "-" + f.getAbsolutePath());
             }
@@ -100,7 +95,6 @@ public class DirectoryToNeo4j {
     }
 
     public static void main(String[] args) {
-        General.DEBUG = true;
         Site site = br.edimarmanica.dataset.swde.auto.Site.MSN;
         DirectoryToNeo4j load = new DirectoryToNeo4j(site, true);
         try {
