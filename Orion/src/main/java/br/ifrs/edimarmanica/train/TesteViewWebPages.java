@@ -13,7 +13,7 @@ import javax.swing.JScrollPane;
  *
  * @author Administrador
  */
-public class Teste {
+public class TesteViewWebPages {
 
     public static void main(String args[]) throws Exception {
         JEditorPane website = new JEditorPane("http://smo-gram.tumblr.com/");
